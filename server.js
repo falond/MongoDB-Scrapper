@@ -16,12 +16,26 @@ var cheerio = require("cheerio");
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
+mongoose.connect("mongodb://localhost/thescrapper", {
+  useMongoClient: true
+});
 
+var db = mongoose.connection;
+ 
+// Show any mongoose errors
+db.on("error", function(error) {
+  console.log("Mongoose Error: ", error);
+});
+
+// Once logged in to the db through mongoose, log a success message
+db.once("open", function() {
+  console.log("Mongoose connection successful.");
+});
 
 
 //****************************************************
 //request, not sure if this is needed
-request('http://www.google.com', function (error, response, body) {
+request('http://www.theonion.com', function (error, response, body) {
   console.log('error:', error); // Print the error if one occurred
   console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
   console.log('body:', body); // Print the HTML for the Google homepage.
@@ -47,7 +61,68 @@ app.use(methodOverride("_method"));
 // Serve static content
 app.use(express.static("public"));
 
+router.get("/", function(req, res) {
+  res.render("index");
+});
 
+
+// This will get the articles scraped and saved in db and show them in list.
+router.get("/savedarticles", function(req, res) {
+
+  // Grab every doc in the Articles array
+  Article.find({}, function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Or send the doc to the browser as a json object
+    else {
+      var hbsArticleObject = {
+        articles: doc
+      };
+
+      res.render("savedarticles", hbsArticleObject);
+    }
+  });
+});
+
+// A GET request to scrape the echojs website
+router.post("/scrape", function(req, res) {
+
+  // First, we grab the body of the html with request
+  request("https://www.theonion.com/", function(error, response, html) {
+    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    var $ = cheerio.load(html);
+
+    // Make emptry array for temporarily saving and showing scraped Articles.
+    var scrapedArticles = {};
+    // Now, we grab every h2 within an article tag, and do the following:
+    $("article h2").each(function(i, element) {
+
+      // Save an empty result object
+      var result = {};
+
+      // Add the text and href of every link, and save them as properties of the result object
+      result.title = $(this).children("a").text();
+
+      console.log("What's the result title? " + result.title);
+      
+      result.link = $(this).children("a").attr("href");
+
+      scrapedArticles[i] = result;
+
+    });
+
+    console.log("Scraped Articles object built nicely: " + scrapedArticles);
+
+    var hbsArticleObject = {
+        articles: scrapedArticles
+    };
+
+    res.render("index", hbsArticleObject);
+
+  });
+});
 
 
 
