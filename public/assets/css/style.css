@@ -1,0 +1,85 @@
+html {
+	font-size: 12px;
+}
+
+li { 
+    margin-bottom: 1%;
+}
+
+p {
+	font-size: 16px;
+	margin-left: 1%;
+	margin-top: 1%;
+}
+
+#bodyinput {
+    width: 50%;
+}
+
+
+.navbar-default {
+    background-color: #8c414e;
+    border-color: #100f10;
+}
+
+
+.jumbotron {
+	overflow: hidden;
+    background-size: 50%;
+    background-position: center;
+    background-image: url('../images/Onion-Logo-Full.png');
+    background-repeat: no-repeat;
+    height: 250px;
+    width: 100%;
+}
+
+.panel-heading.row {
+	width: 100%;
+    margin-left: 0%;
+}
+
+.panel-primary {
+    height: 135px;
+}
+
+#savenote {
+    display: block;
+}
+
+/*brand title*/
+.navbar-default .navbar-brand  {
+    color: white;
+}
+
+/*saved articles button*/
+.navbar-default .navbar-nav>li>a {
+    color: white;
+}
+
+/*home button*/
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+    color: white;
+    background-color: #8c414e;
+}
+
+/*scrapper button*/
+.btn-default {
+    color: white;
+    background-color: #8c414e;
+    border-color: #ccc;
+}
+
+/*panels*/
+.panel-primary>.panel-heading {
+    color: white;
+    background-color: #8c414e;
+    border-color: #ccc;
+}
+
+/* 
+  These rules take effect when the browser's width
+  is 640px or less.
+*/
+@media screen and (max-width: 640px) {
+	
+}
