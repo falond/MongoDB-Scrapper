@@ -20,7 +20,7 @@ var app = express();
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/scrapper", {
+mongoose.connect("mongodb://localhost/toy", {
   useMongoClient: true
 });
 
@@ -62,41 +62,45 @@ app.use(methodOverride("_method"));
 // Serve static content
 app.use(express.static("public"));
 
+app.get("/", function(req, res) {
+  res.render("index");
+});
 
 
 
-// // This will get the articles scraped and saved in db and show them in list.
-// app.get("/savedarticles", function(req, res) {
 
-//   // Grab every doc in the Articles array
-//   db.Article.find({}, function(error, doc) {
-//     // Log any errors
-//     if (error) {
-//       console.log(error);
-//     }
-//     // Or send the doc to the browser as a json object
-//     else {
-//       var hbsArticleObject = {
-//         articles: doc
-//       };
+// This will get the articles scraped and saved in db and show them in list.
+app.get("/savedarticles", function(req, res) {
 
-//       res.render("savedarticles", hbsArticleObject);
-//     }
-//   });
-// });
+  // Grab every doc in the Articles array
+  db.Article.find({}, function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Or send the doc to the browser as a json object
+    else {
+      var hbsArticleObject = {
+        articles: doc
+      };
+
+      res.render("savedarticles", hbsArticleObject);
+    }
+  });
+});
 
 // A GET request to scrape the echojs website
-app.get("/scrape", function(req, res) {
+app.post("/scrape", function(req, res) {
 
   // First, we grab the body of the html with request
-  request("https://www.theonion.com/", function(error, response, html) {
+  request("https://entertainment.theonion.com/", function(error, response, html) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
 
     // Make emptry array for temporarily saving and showing scraped Articles.
     var scrapedArticles = {};
     // Now, we grab every h2 within an article tag, and do the following:
-    $(".featured-headline").each(function(i, element) {
+    $("article h1").each(function(i, element) {
 
       // Save an empty result object
       var result = {};
@@ -107,6 +111,8 @@ app.get("/scrape", function(req, res) {
       console.log("What's the result title? " + result.title);
       
       result.link = $(this).children("a").attr("href");
+
+      result.img = $(this).children("a").attr("img");
 
       scrapedArticles[i] = result;
 
@@ -125,7 +131,7 @@ app.get("/scrape", function(req, res) {
 
 
 
-app.use('/static', express.static('public'));
+// app.use('/static', express.static('public'));
 var PORT = process.env.PORT || 3000;
 //PORT
 // Set the app to listen on port 3000
