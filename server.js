@@ -20,7 +20,7 @@ var app = express();
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/toy", {
+mongoose.connect("mongodb://localhost/scrapper", {
   useMongoClient: true
 });
 
